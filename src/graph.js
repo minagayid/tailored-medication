@@ -1,17 +1,31 @@
 export function projectToKnowledgeGraph(record) {
   const nodes = [];
   const edges = [];
-  if (record.medicationProduct) {
-    nodes.push({ id: `medication:${record.identifiers.find((id) => id.startsWith("rxnorm:")) ?? record.query}`, labels: ["MedicationProduct"], properties: record.medicationProduct });
+  const productIdentifier = record.identifiers?.find((id) => id.startsWith("rxnorm:") || id.startsWith("dailymed:"));
+  const moleculeIdentifier = record.identifiers?.find((id) => id.startsWith("pubchem:") || id.startsWith("chembl:"));
+  const productId = record.medicationProduct && productIdentifier ? `medication:${productIdentifier}` : null;
+  const moleculeId = record.molecularEntity
+    ? `molecule:${record.molecularEntity.inchiKey ?? record.molecularEntity.cid ?? moleculeIdentifier ?? ""}`
+    : null;
+  if (record.medicationProduct && productId) nodes.push({ id: productId, labels: ["MedicationProduct"], properties: record.medicationProduct });
+  if (record.molecularEntity && moleculeId) nodes.push({ id: moleculeId, labels: ["MolecularEntity"], properties: record.molecularEntity });
+
+  for (const relationship of record.relationships ?? []) {
+    if (!productId || !moleculeId || record.status !== "resolved" || relationship.type !== "has_molecular_entity" || !relationship.evidenceId) continue;
+    const targetMatches = record.identifiers?.includes(`${relationship.targetSource}:${relationship.targetSourceId}`);
+    if (targetMatches && !moleculeId.endsWith(":")) {
+      edges.push({
+        from: productId,
+        type: "HAS_MOLECULAR_ENTITY",
+        to: moleculeId,
+        properties: { evidenceId: relationship.evidenceId, status: record.status, requiresReview: record.status !== "resolved" }
+      });
+    }
   }
-  if (record.molecularEntity) {
-    nodes.push({ id: `molecule:${record.molecularEntity.inchiKey ?? record.molecularEntity.cid ?? record.query}`, labels: ["MolecularEntity"], properties: record.molecularEntity });
-  }
-  if (nodes.length === 2) edges.push({ from: nodes[0].id, type: "HAS_CHEMICAL_ENTITY", to: nodes[1].id, properties: { status: record.status, requiresReview: record.status !== "resolved" } });
-  for (const [scope, fields] of Object.entries(record.provenance)) {
+  for (const [scope, fields] of Object.entries(record.provenance ?? {})) {
     for (const [field, claims] of Object.entries(fields)) {
       for (const item of claims) {
-        const evidenceId = `evidence:${item.source}:${item.sourceId}:${field}`;
+        const evidenceId = `evidence:${item.source}:${item.sourceId}:${item.sourceVersion ?? "unspecified"}:${field}`;
         nodes.push({ id: evidenceId, labels: ["EvidenceAssertion"], properties: { scope, ...item } });
       }
     }

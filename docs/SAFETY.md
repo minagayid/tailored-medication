@@ -8,6 +8,19 @@
 - Molecular generation is confined to research queues. It must not create prescriptions or executable manufacturing instructions.
 - Manufacturing requires pharmacist authorization, validated master batch records, chain of custody, release testing, and applicable GMP/USP/regulatory controls.
 
+## What the local safety gate checks
+
+The `safetyGate()` function is a deliberately conservative software boundary. It blocks:
+
+- malformed canonical records, unresolved identity, conflicts, source/candidate errors, or remaining review reasons;
+- missing evidence metadata (`source`, `version`, `retrievedAt`, `grade`, and `applicability`);
+- non-boolean clinician/pharmacist attestations and missing required attestations;
+- unknown intended uses, manufacturing, and novel-molecule use.
+
+The supported intended uses are `clinical_decision_support` and `research_review`; both remain subject to the applicable review and governance controls.
+
+The gate is not a clinical validator and does not establish that evidence is correct, current, or applicable to a patient. It is a fail-closed boundary that makes missing review visible before a caller can treat a resolved record as downstream decision-support input.
+
 ## Minimum controls before handling patient data
 
 - Explicit purpose/consent management and minimum-necessary access.
@@ -16,4 +29,4 @@
 - Immutable audit events for data access, resolution, evidence update, override, and release decision.
 - Model/evidence versioning, bias assessment, clinical validation, incident response, and jurisdiction-specific legal review.
 
-The `safetyGate()` function demonstrates a deliberately conservative software boundary: unresolved identity conflicts, missing evidence, or a non-clinician review state block downstream use.
+This repository is not medical advice, a prescribing system, or a manufacturing control system.

@@ -1,13 +1,14 @@
 {
-  "name": "precision-medication-platform",
-  "version": "0.1.0",
+  "name": "tailored-medication",
+  "version": "0.2.0",
   "private": true,
   "description": "Safety-first foundation for evidence-backed precision medication research.",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": ">=18" },
   "scripts": {
     "test": "node --test",
-    "demo": "node scripts/demo.mjs"
+    "demo": "node scripts/demo.mjs",
+    "resolve": "node scripts/resolve.mjs"
   },
   "license": "MIT"
 }
