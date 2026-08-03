@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1",
+  "query": "Aspirin",
+  "retrievedAt": "2026-08-03T00:00:00Z",
+  "candidates": [
+    {
+      "type": "medication_product",
+      "source": "rxnorm",
+      "sourceId": "1191",
+      "sourceVersion": "rxnorm-fixture-v1",
+      "retrievedAt": "2026-08-03T00:00:00Z",
+      "name": "Aspirin",
+      "normalizedName": "aspirin",
+      "fields": { "rxcui": "1191" },
+      "confidence": 0.9,
+      "matchStatus": "verified",
+      "relationships": [{ "type": "has_molecular_entity", "targetSource": "pubchem", "targetSourceId": "CID:2244", "evidenceId": "fixture-relationship-1" }]
+    },
+    {
+      "type": "molecular_entity",
+      "source": "pubchem",
+      "sourceId": "CID:2244",
+      "sourceVersion": "pubchem-fixture-v1",
+      "retrievedAt": "2026-08-03T00:00:00Z",
+      "name": "Aspirin",
+      "normalizedName": "aspirin",
+      "fields": { "cid": 2244, "inchiKey": "BSYNRYMUTXBXSQ-UHFFFAOYSA-N", "molecularFormula": "C9H8O4" },
+      "confidence": 0.95,
+      "matchStatus": "verified"
+    }
+  ],
+  "errors": []
+}
