@@ -9,7 +9,7 @@ A safety-first, research-oriented foundation for clinician-supervised precision-
 - Deterministic reconciliation with field-level provenance, confidence, conflicts, and review routing.
 - Versioned, replayable offline candidate snapshots for reproducible local runs.
 - Bounded adapters for RxNorm/RxNav, DailyMed, PubChem, and ChEMBL; a licensed-source boundary for DrugBank.
-- A conservative safety gate that requires complete evidence and strict clinician/pharmacist attestations.
+- A local safety gate that reports whether checks pass but never authorizes a clinical workflow.
 - A dependency-free Node.js reference implementation with a 17-test suite.
 
 ## Quick start
@@ -50,3 +50,6 @@ This repository is a local reconciliation and evidence-boundary library, not a c
 ## Scope and safety
 
 This repository is not medical advice, a prescribing system, or a manufacturing control system. Clinical recommendations require validated evidence, jurisdiction-specific governance, a licensed clinician, pharmacist verification, and patient-specific review. Molecular designs are research hypotheses until preclinical, clinical, regulatory, and quality validation is complete.
+
+
+A local safetyGate result is never clinical authorization, even when its checks pass. A trusted service must authenticate reviewers, verify evidence provenance, and authorize any downstream workflow.

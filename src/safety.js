@@ -6,7 +6,7 @@ function evidenceBlockers(evidence) {
   evidence.forEach((item, index) => {
     for (const field of ["source", "version", "retrievedAt", "grade", "applicability"]) {
       if (!item || item[field] === undefined || item[field] === null || String(item[field]).trim() === "") {
-        blockers.push(`Evidence item ${index + 1} is missing ${field}.`);
+        blockers.push("Evidence item " + (index + 1) + " is missing " + field + ".");
       }
     }
   });
@@ -29,8 +29,9 @@ export function safetyGate({ record, evidence = [], clinicianReviewed = false, p
   if (intendedUse === "manufacturing") blockers.push("Manufacturing requires separate pharmacist, quality, and regulatory release controls.");
   if (intendedUse === "novel_molecule") blockers.push("Novel molecules are research hypotheses and cannot be used for treatment.");
   return {
-    allowed: blockers.length === 0,
+    allowed: false,
+    localChecksPassed: blockers.length === 0,
     blockers,
-    requiredNextStep: blockers.length ? "Resolve blockers before downstream use." : "Create an auditable clinician decision-support bundle."
+    requiredNextStep: "A trusted service must authenticate reviewers, verify evidence provenance, and authorize any downstream clinical workflow."
   };
 }
