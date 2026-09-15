@@ -112,7 +112,7 @@ test("empty queries return a review record instead of throwing", () => {
 
 test("live adapter candidates carry retrieval metadata", async () => {
   const adapter = new RxNavAdapter({
-    fetchImpl: async () => ({ ok: true, json: async () => ({ idGroup: { rxnormId: ["1191"] } }) })
+    fetchImpl: async (url) => new Response(JSON.stringify(new URL(url).pathname.endsWith("/properties.json") ? { properties: { name: "Aspirin", tty: "SCD" } } : { idGroup: { rxnormId: ["1191"] } }), { status: 200 })
   });
   const [candidate] = await adapter.search("Aspirin");
   assert.equal(candidate.sourceVersion, "rxnav-rxcui-v1");
@@ -149,4 +149,16 @@ test("verified candidates require source version and retrieval time", () => {
   });
   assert.equal(record.status, "needs_review");
   assert.match(record.reviewReasons.join(" "), /sourceVersion|retrievedAt|metadata/i);
+});
+
+test("the local safety gate never authorizes a clinical workflow", () => {
+  const decision = safetyGate({
+    record: { status: "resolved", medicationProduct: { rxcui: "1191" }, conflicts: [], errors: [], reviewReasons: [], relationships: [] },
+    evidence: completeEvidence,
+    clinicianReviewed: true,
+    pharmacistReviewed: true
+  });
+  assert.equal(decision.localChecksPassed, true);
+  assert.equal(decision.allowed, false);
+  assert.match(decision.requiredNextStep, /trusted service/i);
 });
